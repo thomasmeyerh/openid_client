@@ -57,7 +57,7 @@ class Authenticator {
             await for (var request in requestServer) {
               request.response.statusCode = 200;
               request.response.headers.set('Content-type', 'text/html');
-              request.response.writeln('<html>'
+              request.response.writeln('<html style="background-color: #F1F1E5">'
                   '<h1>Hello from Thomas</h1>'
                   '<script>window.close();</script>'
                   '</html>');
