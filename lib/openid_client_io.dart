@@ -54,27 +54,6 @@ class Authenticator {
     return _requestServers[port] ??=
         (HttpServer.bind(InternetAddress.loopbackIPv4, port)
           ..then((requestServer) async {
-            await for (var request in requestServer) {
-              request.response.statusCode = 200;
-              request.response.headers.set('Content-type', 'text/html');
-              request.response.writeln('<html style="background-color: #F1F1E5">'
-                  '<h1>Hello from Thomas</h1>'
-                  '<script>window.close();</script>'
-                  '</html>');
-              await request.response.close();
-              var result = request.requestedUri.queryParameters;
-
-              if (!result.containsKey('state')) continue;
-              var r = _requestsByState.remove(result['state']);
-              r.complete(result);
-              if (_requestsByState.isEmpty) {
-                for (var s in _requestServers.values) {
-                  await (await s).close();
-                }
-                _requestServers.clear();
-              }
-            }
-
             await _requestServers.remove(port);
           }));
   }
