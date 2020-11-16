@@ -50,11 +50,17 @@ class Authenticator {
   static final Map<String, Completer<Map<String, String>>> _requestsByState =
       {};
 
-  static Future<HttpServer> _startServer(int port) {
+    static Future<HttpServer> _startServer(int port) {
     return _requestServers[port] ??=
         (HttpServer.bind(InternetAddress.loopbackIPv4, port)
           ..then((requestServer) async {
             await for (var request in requestServer) {
+              request.response.statusCode = 200;
+              request.response.headers.set('Content-type', 'text/html');
+              request.response.writeln('<html>'
+                  '<h1>You can now close this window</h1>'
+                  '<script>window.close();</script>'
+                  '</html>');
               await request.response.close();
               var result = request.requestedUri.queryParameters;
 
@@ -68,6 +74,7 @@ class Authenticator {
                 _requestServers.clear();
               }
             }
+
             await _requestServers.remove(port);
           }));
   }
